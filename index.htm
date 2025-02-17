@@ -133,20 +133,34 @@
                     loadQuestion();
                 }, 1000);
             } else {
-                setTimeout(() => {
-                    let resultHTML = `<h2>Joc terminat!</h2><p>Ai obținut ${score} din ${questions.length} puncte.</p><ul>`;
-                    answersHistory.forEach(answer => {
-                        resultHTML += `
-                            <li>
-                                <strong>Întrebare:</strong> ${answer.question}<br>
-                                <strong>Răspuns corect:</strong> ${questions.find(q => q.a === answer.correctAnswer).options[answer.correctAnswer.charCodeAt(0) - 97]}<br>
-                                <strong>Răspunsul tău:</strong> ${questions.find(q => q.a === answer.userAnswer).options[answer.userAnswer.charCodeAt(0) - 97]}<br>
-                                <strong>Rezultatul:</strong> ${answer.isCorrect ? "Corect" : "Greșit"}
-                            </li>`;
-                    });
-                    resultHTML += '</ul>';
-                    document.querySelector('.quiz-container').innerHTML = resultHTML;
-                }, 1000);
+                let nrCorectAnswers = 0;
+setTimeout(() => {
+    let resultHTML = `<h2>Joc terminat!</h2><ul>`;
+    
+    answersHistory.forEach(answer => {
+        let isCorrect = answer.isCorrect;
+        if (isCorrect) {
+            nrCorectAnswers++;
+        }
+
+        resultHTML += `
+            <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div style="flex: 1; text-align: left;">
+                    <strong>Întrebare:</strong> ${answer.question}
+                </div>
+                <div style="flex: 1; text-align: right; color: ${isCorrect ? 'green' : 'red'};">
+                    <strong>Rezultatul:</strong> ${isCorrect ? '1' : '0'}
+                </div>
+            </li>`;
+    });
+
+    let grade = (nrCorectAnswers > 0) ? (nrCorectAnswers/questions.length  ) * 10 : 0;
+
+    resultHTML += `</ul><p><strong>Nota ta: ${grade}</strong></p>`;
+    
+    document.querySelector('.quiz-container').innerHTML = resultHTML;
+}, 1000);
+
             }
         }
 
