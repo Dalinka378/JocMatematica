@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joc: Relațiile Aritmetice în Triunghiul Dreptunghic</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #f0f4f8;
+            color: #333;
+        }
+        .quiz-container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        .question {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        .option {
+            display: block;
+            margin: 10px 0;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.4em;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h2>Joc: Relațiile Aritmetice în Triunghiul Dreptunghic</h2>
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <button onclick="checkAnswer()">Verifică răspunsul</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "1.Care este formula teoremei lui Pitagora?", a: "a", options: ["a² + b² = c²", "a² - b² = c²", "a² + b² = 2c²", "a² = b² + c²"] },
+            { q: "2.Ce este ipotenuza?", a: "c", options: ["Cateta opusă unui unghi", "Cateta alăturată unui unghi", "Latura opusă unghiului drept", "Oricare latură"] },
+            { q: "3.Cum se calculează sinusul unui unghi?", a: "a", options: ["cateta opusă / ipotenuză", "cateta alăturată / ipotenuză", "cateta opusă / cateta alăturată", "cateta alăturată / cateta opusă"] },
+            { q: "4.Ce exprimă teorema lui Pitagora?", a: "b", options: ["Raportul dintre catete", "Relația dintre catete și ipotenuză", "Formula ariei unui triunghi", "Raportul dintre unghiuri"] },
+            { q: "5.Care este formula tangentei?", a: "c", options: ["cateta opusă / ipotenuză", "cateta alăturată / ipotenuză", "cateta opusă / cateta alăturată", "cateta alăturată / cateta opusă"] },
+            { q: "6.Câte unghiuri ascuțite are un triunghi dreptunghic?", a: "b", options: ["1", "2", "3", "4"] },
+            { q: "7.Ce tip de unghi are un triunghi dreptunghic?", a: "a", options: ["un unghi drept", "un unghi obtuz", "doar unghiuri ascuțite", "două unghiuri drepte"] },
+            { q: "8.Care este unitatea de măsură pentru unghiuri?", a: "d", options: ["metri", "kilograme", "litri", "grade"] },
+            { q: "9.Ce este cateta opusă?", a: "a", options: ["Latura opusă unghiului de referință", "Latura alăturată unghiului de referință", "Ipotenuza", "Mediatoarea"] },
+            { q: "10.Care este valoarea sinusului pentru 90°?", a: "a", options: ["1", "0", "0.5", "∞"] },
+            { q: "11.Care este valoarea cosinusului pentru 0°?", a: "a", options: ["1", "0", "0.5", "∞"] },
+            { q: "12.Cât este suma unghiurilor unui triunghi?", a: "c", options: ["90°", "120°", "180°", "360°"] },
+            { q: "13.Ce înseamnă tangenta unghiului de 45°?", a: "b", options: ["0", "1", "∞", "2"] },
+            { q: "14.Care este formula pentru arie?", a: "c", options: ["a² + b²", "c²", "(a*b)/2", "a*b"] },
+            { q: "15.Care este raportul în teorema lui Pitagora?", a: "a", options: ["c² = a² + b²", "c = a + b", "c² = a*b", "a² = b² + c²"] },
+            { q: "16.Care este funcția trigonometrică inversă a tangentei?", a: "d", options: ["sin", "cos", "cot", "arctan"] },
+            { q: "17.Care este formula medianei pe ipotenuză?", a: "c", options: ["a*b", "a + b", "c/2", "c²"] },
+            { q: "18.Ce înseamnă cosinusul unui unghi?", a: "b", options: ["cateta opusă / ipotenuză", "cateta alăturată / ipotenuză", "cateta opusă / cateta alăturată", "cateta alăturată / cateta opusă"] },
+            { q: "19.Care este valoarea tangentă pentru 45°?", a: "b", options: ["0", "1", "∞", "2"] },
+            { q: "20.Ce tip de triunghi are un unghi drept?", a: "a", options: ["dreptunghic", "isoscel", "echilateral", "obtuzunghic"] }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answersHistory = [];
+
+        function loadQuestion() {
+            const questionElement = document.getElementById('question');
+            const optionsElement = document.getElementById('options');
+            const q = questions[currentQuestion];
+
+            questionElement.textContent = q.q;
+            optionsElement.innerHTML = '';
+
+            q.options.forEach((opt, index) => {
+                const letter = String.fromCharCode(97 + index);
+                optionsElement.innerHTML += `<label class="option"><input type="radio" name="answer" value="${letter}"> ${opt}</label>`;
+            });
+        }
+
+        function checkAnswer() {
+            const selected = document.querySelector('input[name="answer"]:checked');
+            const result = document.getElementById('result');
+            if (!selected) {
+                result.textContent = "Te rog să selectezi un răspuns!";
+                result.style.color = "#dc3545";
+                return;
+            }
+
+            const isCorrect = selected.value === questions[currentQuestion].a;
+            answersHistory.push({
+                question: questions[currentQuestion].q,
+                correctAnswer: questions[currentQuestion].a,
+                userAnswer: selected.value,
+                isCorrect: isCorrect
+            });
+
+            if (isCorrect) {
+                score++;
+                result.textContent = "Corect!";
+                result.style.color = "#28a745";
+            } else {
+                result.textContent = "Greșit!";
+                result.style.color = "#dc3545";
+            }
+
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                setTimeout(() => {
+                    result.textContent = '';
+                    loadQuestion();
+                }, 1000);
+            } else {
+                setTimeout(() => {
+                    let resultHTML = `<h2>Joc terminat!</h2><p>Ai obținut ${score} din ${questions.length} puncte.</p><ul>`;
+                    answersHistory.forEach(answer => {
+                        resultHTML += `
+                            <li>
+                                <strong>Întrebare:</strong> ${answer.question}<br>
+                                <strong>Răspuns corect:</strong> ${questions.find(q => q.a === answer.correctAnswer).options[answer.correctAnswer.charCodeAt(0) - 97]}<br>
+                                <strong>Răspunsul tău:</strong> ${questions.find(q => q.a === answer.userAnswer).options[answer.userAnswer.charCodeAt(0) - 97]}<br>
+                                <strong>Rezultatul:</strong> ${answer.isCorrect ? "Corect" : "Greșit"}
+                            </li>`;
+                    });
+                    resultHTML += '</ul>';
+                    document.querySelector('.quiz-container').innerHTML = resultHTML;
+                }, 1000);
+            }
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
